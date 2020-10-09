@@ -82,16 +82,20 @@ def main():
     print("Loaded", len(rangos_partidos),"/24 ranges")
     numero_de_rangos=len(rangos_partidos)
     logfile=open("dascan.log","a+")
-    for i in range (0, numero_de_rangos): #for rango in rangos_partidos:
+    empezamos_en=0 # si nos hemos quedado a medias antes podemos empezar por el rango que toque
+    for i in range (empezamos_en, numero_de_rangos): #for rango in rangos_partidos:
         result = subprocess.run(["fping", "-gaq", str(rangos_partidos[i])], capture_output=True, text=True)
         lista_salida=result.stdout.splitlines()
         fecha_actual=datetime.now()
         print(i+1,"/",numero_de_rangos,"Range", rangos_partidos[i], "processed", len(lista_salida), "ips answer ping", fecha_actual)
-        print(i+1,"/",numero_de_rangos,"Range", rangos_partidos[i], "processed", len(lista_salida), "ips answer ping" ,file=logfile)
+        print(i+1,"/",numero_de_rangos,"Range", rangos_partidos[i], "processed", len(lista_salida), "ips answer ping" ,fecha_actual, file=logfile)
         if rangos_partidos[i] not in dic_rangos: # Añadimos rango si no existe
             dic_rangos[rangos_partidos[i]]=[[fecha_actual.date(),len(lista_salida)]]
         else:
             dic_rangos[rangos_partidos[i]]+=[[fecha_actual.date(),len(lista_salida)]]
+        if i % 100 == 0:
+            logfile.flush()
+            guarda_diccionario(dic_rangos,"dic_rangos.dat")
     logfile.close()
     guarda_diccionario(dic_rangos,"dic_rangos.dat")
     #print (dic_rangos)
