@@ -78,14 +78,14 @@ def main():
         else:
             lista_subredes=(network.subnets(new_prefix=24))
             rangos_partidos+=(lista_subredes)
-    print(rangos_partidos)
+    #print(rangos_partidos)
     print("Loaded", len(rangos_partidos),"/24 ranges")
     numero_de_rangos=len(rangos_partidos)
-    fecha_actual=datetime.now()
     logfile=open("dascan.log","a+")
     for i in range (0, numero_de_rangos): #for rango in rangos_partidos:
         result = subprocess.run(["fping", "-gaq", str(rangos_partidos[i])], capture_output=True, text=True)
         lista_salida=result.stdout.splitlines()
+        fecha_actual=datetime.now()
         print(i+1,"/",numero_de_rangos,"Range", rangos_partidos[i], "processed", len(lista_salida), "ips answer ping", fecha_actual)
         print(i+1,"/",numero_de_rangos,"Range", rangos_partidos[i], "processed", len(lista_salida), "ips answer ping" ,file=logfile)
         if rangos_partidos[i] not in dic_rangos: # Añadimos rango si no existe
@@ -94,7 +94,7 @@ def main():
             dic_rangos[rangos_partidos[i]]+=[[fecha_actual.date(),len(lista_salida)]]
     logfile.close()
     guarda_diccionario(dic_rangos,"dic_rangos.dat")
-    print (dic_rangos)
+    #print (dic_rangos)
 
 
 if __name__ == '__main__':
